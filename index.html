@@ -13,7 +13,7 @@
 <!--</div>-->
 <canvas id="canvas" style="background-color: lightblue"></canvas>
 <script src="//d3js.org/d3.v3.min.js"></script>
-<script src="/js/DepthFirstRecursiveBackTracer.js"></script>
+<script src="/js/MazeBuilder.js"></script>
 <script>
   const justGo = 'justGo';
   var go = true;
@@ -28,9 +28,9 @@
 
   function createArr(x, y) {
     var arr = [];
-    for(var i = 0; i < x; i++) {
+    for(var i = 0; i < y; i++) {
       var row = [];
-      for(var j = 0; j < y; j++) {
+      for(var j = 0; j < x; j++) {
         //row.push(Math.random() * 2 | 0);
         row.push(0);
       }
@@ -39,10 +39,10 @@
     return arr;
   }
 
-  var width = 500,
-      height = 500,
-      cell = 1,
-      wall = 1;
+  var width = 200,
+      height = 100,
+      cell = 4,
+      wall = 2;
 
 
   var arr = [
@@ -53,22 +53,22 @@
     [0,0,0,0,0],
     [0,0,0,0,0],
   ];
-  var arr = createArr(width, height);
-  var bt = new DepthFirstRecursiveBackTracer(arr);
-  bt.make();
-  arr = bt.getMaze();
+  arr = createArr(width, height);
+  var MB = new MazeBuilder(arr);
+  MB.RecBackTracker();
+  arr = MB.getMaze();
   render(arr, wall, cell);
 
   function render(arr, wall, cell) {
-    var wallsInRow = Math.ceil(arr.length / 2) + 1;
-    var cellsInRow = Math.ceil(arr.length / 2);
-    console.log(wallsInRow);
-    var width = wallsInRow * wall + cellsInRow * cell;
-    console.log(wallsInRow);
-
+    
+    var calcWidth = function(arr) {
+      var wallsInRow = Math.ceil(arr.length / 2) + 1;
+      var cellsInRow = Math.ceil(arr.length / 2);
+      return wallsInRow * wall + cellsInRow * cell;
+    };
     var canvas = d3.select("#canvas")
-        .attr("width", width)
-        .attr("height", width);
+        .attr("width", calcWidth(arr[0]))
+        .attr("height", calcWidth(arr));
     var ctx = canvas.node().getContext("2d");
 
     ctx.fillStyle = "brown";
