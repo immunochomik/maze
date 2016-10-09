@@ -13,13 +13,17 @@
 <!--</div>-->
 <canvas id="canvas" style="background-color: lightblue"></canvas>
 <script src="//d3js.org/d3.v3.min.js"></script>
+<script src="/js/DepthFirstRecursiveBackTracer.js"></script>
 <script>
   const justGo = 'justGo';
   var go = true;
   var steps = justGo;
 
-  function pp(x) {
+  function pp(x, stop) {
     console.log(JSON.stringify(x, null, 2));
+    if(stop) {
+      throw new Error('stop');
+    }
   }
 
   function createArr(x, y) {
@@ -27,29 +31,32 @@
     for(var i = 0; i < x; i++) {
       var row = [];
       for(var j = 0; j < y; j++) {
-        row.push(Math.random() * 2 | 0);
+        //row.push(Math.random() * 2 | 0);
+        row.push(0);
       }
       arr.push(row);
     }
     return arr;
   }
 
-  var width = 10,
-      height = 10,
-      cell = 10,
-      wall = 5;
+  var width = 500,
+      height = 500,
+      cell = 1,
+      wall = 1;
 
-  //var arr = createArr(width, height);
+
   var arr = [
   //   s   s
-    [1,1,1,1,1],
-    [0,0,1,0,0],
-    [1,1,1,1,1],
-    [1,0,0,0,1],
-    [1,1,1,0,1],
-
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
+    [0,0,0,0,0],
   ];
-
+  var arr = createArr(width, height);
+  var bt = new DepthFirstRecursiveBackTracer(arr);
+  bt.make();
+  arr = bt.getMaze();
   render(arr, wall, cell);
 
   function render(arr, wall, cell) {
