@@ -118,7 +118,10 @@ var MazeBuilder = (function(){
     }
   };
   // return [x, y]
-  Def.prototype.randomCell = function() {
+  Def.prototype.randomCell = function(cell) {
+    if(cell) {
+      return cell;
+    }
     // get random odd number in range
     var oddColl = Math.random() * this.rowLength -1 | 1;
     var oddRow = Math.random() * this.m.length -1 | 1;
