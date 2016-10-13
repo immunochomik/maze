@@ -41,7 +41,3 @@ def get_edges():
 def page_not_found(e):
     """Return a custom 404 error."""
     return 'Sorry, nothing at this URL.', 404
-
-
-if __name__ == "__main__":
-    app.run()
