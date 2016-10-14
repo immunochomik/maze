@@ -3,3 +3,7 @@ examples/*
 node_modules
 static/build*
 lib/*
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
