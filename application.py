@@ -1,5 +1,4 @@
 from flask import Flask, url_for, render_template
-import cv2
 import json
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -24,6 +23,7 @@ def test():
 @app.route('/image', methods=['GET', 'POST', 'PUT'])
 def get_edges():
     """Post inage and return edges base foe maze"""
+    import cv2
     img = cv2.imread('gate-6.jpg',0)
     edges = cv2.Canny(img,0,200)
     ret = []
