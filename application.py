@@ -1,4 +1,5 @@
 from flask import Flask, url_for, render_template
+from flask import Response
 import json
 application = Flask(__name__)
 application.config['DEBUG'] = True
@@ -23,15 +24,19 @@ def test():
 @application.route('/image', methods=['GET', 'POST', 'PUT'])
 def get_edges():
     """Post inage and return edges base foe maze"""
+    try:
+        import cv2
+    except Exception as e:
+        return 'Can not inmport cv2'
     img = cv2.imread('gate-6.jpg',0)
     edges = cv2.Canny(img,0,200)
     ret = []
     for row in edges:
         ret_row = []
         for point in row:
-            ret_row.applicationend('0' if str(point) == '0' else '1')
-        ret.applicationend(ret_row)
-    resp = flask.Response()
+            ret_row.append('0' if str(point) == '0' else '1')
+        ret.append(ret_row)
+    resp = Response()
     resp.headers['Content-Type'] = 'applicationlication/json'
     return json.dumps(ret)
 
