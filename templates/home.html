@@ -2,36 +2,48 @@
 {% block title %}Foo{% endblock %}
 
 {% block content %}
-    
+
 <canvas id="canvas" style="background-color: black"></canvas>
 
 <script>
 
-  function getEdges() {
-    $.ajax( {
-      url : 'test',
-      success: function(res) {
-        console.log(res);
-//        var MB = new MazeBuilder(res.data);
-//        MB.RecBackTracker();
-      }
-    })
-  }
+var width = 500,
+    height = 600,
+    cell = 1,
+    wall = 1;
 
-  getEdges();
+function getEdges() {
+  $.ajax( {
+    //
+    url : 'image',
+    //url : 'http://localhost:5002/edges.php',
+    success: function(res) {
+        if(typeof res == 'string') {
+            res = JSON.parse(res);
+        }
 
-  var width = 500,
-      height = 600,
-      cell = 1,
-      wall = 1;
+      console.log(typeof res);
+      var MB = new MazeBuilder(res.data);
+      MB.RecBackTracker();
+      var arr = MB.getMaze();
+      var Rendi = new Renderer('canvas', arr, wall, cell);
+      Rendi.render(arr);
+    }
+  })
+}
 
-  arr = createArr(width, height);
-  var MB = new MazeBuilder(arr);
-  MB.RecBackTracker();
-  arr = MB.getMaze();
+getEdges();
 
-  var Rendi = new Renderer('canvas', arr, wall, cell);
-  Rendi.render(arr);
+
+
+
+  //arr = createArr(width, height);
+  //var MB = new MazeBuilder(arr);
+  //MB.RecBackTracker();
+  //arr = MB.getMaze();
+
+  //var Rendi = new Renderer('canvas', arr, wall, cell);
+  //Rendi.render(arr);
 
   </script>
 

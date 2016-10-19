@@ -1,0 +1,28 @@
+
+LoadModule wsgi_module modules/mod_wsgi.so
+WSGIRestrictStdout Off
+WSGIScriptReloading On
+
+<VirtualHost *:80>
+
+        Alias /static/ {{document_root}}/static/
+        <Directory {{document_root}}/static/>
+        Order allow,deny
+        Allow from all
+        </Directory>
+
+
+        WSGIScriptAlias / {{document_root}}/application.py
+        WSGIDaemonProcess mazeapp user={{user}} group={{group}} threads=5
+
+<Directory {{document_root}}/>
+  Require all granted
+   WSGIProcessGroup mazeapp
+   WSGIApplicationGroup %{GLOBAL}
+   Order deny,allow
+   Allow from all
+</Directory>
+
+</VirtualHost>
+
+LogFormat "%h (%{X-Forwarded-For}i) %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined

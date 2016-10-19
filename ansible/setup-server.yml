@@ -1,0 +1,77 @@
+---
+- hosts: tag_Name_Server
+  sudo: True
+  gather_facts: no
+  vars:
+    - resourcesDir: resources
+    - user: webapp
+    - group: webapp
+    - document_root: '/var/www/app/'
+
+  tasks:
+    - name: 'add group'
+      user: name={{group}} state=present
+
+    - name: 'add user'
+      user: name={{user}} group={{group}} home={{document_root}} state=present
+
+    - name: update apt
+      apt: update_cache=yes
+
+    - name: install packages apt
+      apt: name={{item}} state=present
+      with_items:
+        - vim
+        - tree
+        - dos2unix
+        - wget
+        - libapache2-mod-wsgi
+        - apache2
+        - python-opencv
+        - python-pip
+        - unzip
+
+    - name: pip install
+      pip: name={{item.n}} version={{item.v}}
+      with_items:
+        - { n: 'Flask', v: '0.10.1' }
+        - { n: 'itsdangerous', v: '0.24'}
+        - { n: 'Jinja2', v: '2.7.3'}
+        - { n: 'MarkupSafe', v: '0.23'}
+        - { n: 'Werkzeug', v: '0.10.1'}
+
+    - name: pip install numpy
+      pip: name=numpy
+
+    - name: write the apache config file
+      template: src={{resourcesDir}}/templates/001-app.j2 dest=/etc/apache2/sites-available/001-app.conf
+
+    - name: setup sites-available symlink
+      file:
+        path: /etc/apache2/sites-enabled/001-app.conf
+        src: /etc/apache2/sites-available/001-app.conf
+        state: link
+        force: yes
+
+    - name: delete default sites enabled
+      file: path=/etc/apache2/sites-enabled/000-default.conf state=absent
+
+    - name: ensure apache is running (and enable it at boot)
+      service: name=apache2 state=started enabled=yes
+
+    - name: clear app dir
+      file: path={{document_root}}/* state=absent
+
+    - name: deploying
+      unarchive: src=app.zip dest={{document_root}}/
+
+    - name: change owner of app files
+      file: path={{document_root}} owner={{user}} group={{group}} recurse=yes
+      notify:
+        - restart apache
+
+  handlers:
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted

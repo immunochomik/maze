@@ -1,0 +1,5 @@
+#!/bin/bash
+# to  call it you need  . ./prepareAWS
+export EC2_INI_PATH=/home/tomek/ansible/ec2.ini
+ssh-agent $SHELL
+ssh-add /home/tomek/.ssh/eb-app.pem
