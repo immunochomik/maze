@@ -3,7 +3,14 @@ from flask import Response
 import json
 import os
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-application = Flask(__name__)
+class CustomFlask(Flask):
+    jinja_options = Flask.jinja_options.copy()
+    jinja_options.update(dict(
+        variable_start_string='%%',
+        variable_end_string='%%',
+    ))
+
+application = CustomFlask(__name__)
 application.config['DEBUG'] = True
 application.config['path'] = APP_ROOT
 

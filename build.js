@@ -3,13 +3,20 @@
  */
 var compressor = require('node-minify');
 
+var mimficator = 'uglifyjs';
+if(process.argv[2] !== 'production') {
+ mimficator = 'no-compress';
+}
+
+console.log(process.argv[2], 'Using ' + mimficator);
 
 new compressor.minify({
-  type: 'uglifyjs',
+  type: mimficator,
   fileIn: [
     'node_modules/d3/build/d3.js',
     'node_modules/jquery/dist/jquery.js',
-    'node_modules/bootstrap/dist/js/bootstrap.js',
+    'node_modules/vue/dist/vue.js',
+    'node_modules/vue-resource/dist/vue-resource.js',
     'assets/js/assorted.js',
     'assets/js/MazeBuilder.js',
     'assets/js/Renderer.js',

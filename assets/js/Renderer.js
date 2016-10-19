@@ -10,16 +10,18 @@ var Renderer = (function() {
     var canvas = d3.select("#" + canvasId )
       .attr("width", calcWidth(arr[0]))
       .attr("height", calcWidth(arr));
-    return canvas.node().getContext("2d");
+    var ctx = canvas.node().getContext("2d");
+    ctx.fillStyle = "white";
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    return ctx;
   };
 
   function Def(canvasId, arr, wallSize, cellSize) {
-    this.ctx = prepareContext(canvasId, arr, wallSize, cellSize)
-    this.ctx.fillStyle = "white";
+    this.wall = parseInt(wallSize);
+    this.cell = parseInt(cellSize);
+    this.ctx = prepareContext(canvasId, arr, this.wall, this.cell);
     this.canvasId = canvasId;
     this.arr = arr;
-    this.wall = wallSize;
-    this.cell = cellSize;
   };
 
   Def.prototype.render = function(arr) {

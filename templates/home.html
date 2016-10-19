@@ -2,49 +2,104 @@
 {% block title %}Foo{% endblock %}
 
 {% block content %}
+<style>
+  input.number {
+    max-width: 6em;
+    padding: 2px;
+  }
+</style>
+<div class="container">
+  <div id="main">
+      <form class="form-inline" v-on:submit.prevent>
+        <div class="form-group">
+          <label for="width">Width</label>
+          <input type="number" class="form-control number" id="width" v-model="width" >
+        </div>
+        <div class="form-group">
+          <label for="width">Height</label>
+          <input type="number" class="form-control number" id="height" v-model="height" >
+        </div>
+        <div class="form-group">
+          <label for="cell">Cell</label>
+          <input type="number" class="form-control number" id="cell" v-model="cell" >
+        </div>
+        <div class="form-group">
+          <label for="wall">Wall</label>
+          <input type="number" class="form-control number" id="wall" v-model="wall" >
+        </div>
+        <div class="form-group">
+          <button class="btn btn-default" @click="renderMaze">Maze</button>
+        </div>
+      </form>
+    </div>
+    <div class="row">
+      <div style="margin-top: 1em;">
+        <canvas id="canvas"
+                style="background-color: black;"
+                width="{{width}}"
+                height="{{height}}"></canvas>
+      </div>
 
-<canvas id="canvas" style="background-color: black"></canvas>
+    </div>
+  </div>
 
 <script>
 
-var width = 500,
-    height = 600,
-    cell = 1,
-    wall = 1;
+  new Vue({
+    el: '#main',
+    data: {
+      width : 50,
+      height: 50,
+      cell: 2,
+      wall: 2,
+      canvasId : 'canvas'
+    },
+    methods: {
+      getEdges : function() {
+        $.ajax( {
+          //
+          url : 'image',
+          //url : 'http://localhost:5002/edges.php',
+          success: function(res) {
+            if(typeof res == 'string') {
+              res = JSON.parse(res);
+            }
 
-function getEdges() {
-  $.ajax( {
-    //
-    url : 'image',
-    //url : 'http://localhost:5002/edges.php',
-    success: function(res) {
-        if(typeof res == 'string') {
-            res = JSON.parse(res);
-        }
+            console.log(typeof res);
+            var MB = new MazeBuilder(res.data);
+            MB.RecBackTracker();
+            var arr = MB.getMaze();
+            var Rendi = new Renderer('canvas', arr, wall, cell);
+            Rendi.render(arr);
+          }
+        })
+      },
+      makeMaze : function(arr) {
+        arr = arr || createArr(this.width, this.height);
+        console.log(arr);
+        var MB = new MazeBuilder(arr);
+        MB.RecBackTracker();
+        return MB.getMaze();
+      },
+      renderMaze : function() {
+        var arr = this.makeMaze();
+        var Rendi = new Renderer('canvas', arr, this.wall, this.cell);
+        Rendi.render(arr);
+      }
+    },
+    ready: function () {
 
-      console.log(typeof res);
-      var MB = new MazeBuilder(res.data);
-      MB.RecBackTracker();
-      var arr = MB.getMaze();
-      var Rendi = new Renderer('canvas', arr, wall, cell);
-      Rendi.render(arr);
+
+
+
     }
-  })
-}
-
-getEdges();
+  });
 
 
 
 
-  //arr = createArr(width, height);
-  //var MB = new MazeBuilder(arr);
-  //MB.RecBackTracker();
-  //arr = MB.getMaze();
 
-  //var Rendi = new Renderer('canvas', arr, wall, cell);
-  //Rendi.render(arr);
 
-  </script>
+</script>
 
-  {% endblock %}
+{% endblock %}
