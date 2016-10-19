@@ -9,3 +9,4 @@ lib/*
 !.elasticbeanstalk/*.global.yml
 *.zip
 ansible/app.zip
+*.pyc
