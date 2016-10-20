@@ -10,6 +10,8 @@
 </style>
 <div class="container">
   <div id="main">
+    <hr>
+    <h4>Maze settings I am going to hide it </h4>
       <form class="form-inline" v-on:submit.prevent>
         <div class="form-group">
           <label for="width">Width</label>
@@ -28,9 +30,23 @@
           <input type="number" class="form-control number" id="wall" v-model="wall" >
         </div>
         <div class="form-group">
-          <button class="btn btn-default" @click="renderMaze">Maze</button>
+          <button class="btn btn-default" @click="renderMaze">Generate</button>
         </div>
       </form>
+    <hr>
+      <h4>You can upload an image as base for the maze</h4>
+    <form class="form-inline" method="post" action="image">
+      <div class="form-group">
+        <input type="file" class="form-control" id="file" v-model="file" >
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" id="url"  placeholder="Or url" v-model="url" >
+      </div>
+      <div class="form-group">
+        <button class="btn btn-default" >Upload</button>
+      </div>
+    </form>
+    <hr>
     </div>
     <div class="row">
       <div style="margin-top: 1em;">
@@ -48,8 +64,8 @@
   new Vue({
     el: '#main',
     data: {
-      width : 50,
-      height: 50,
+      width : 200,
+      height: 200,
       cell: 2,
       wall: 2,
       canvasId : 'canvas'
@@ -82,23 +98,23 @@
         return MB.getMaze();
       },
       renderMaze : function() {
-        var arr = this.makeMaze();
+        var used_base = getBase();
+        var arr = this.makeMaze(used_base);
         var Rendi = new Renderer('canvas', arr, this.wall, this.cell);
         Rendi.render(arr);
       }
     },
     ready: function () {
-
-
-
-
     }
   });
 
-
-
-
-
+  function getBase() {
+    var base = [];
+    {% if base %}
+      base = JSON.parse('%% base | tojson %%');
+      {% endif %}
+      return base;
+    }
 
 </script>
 

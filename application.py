@@ -16,12 +16,28 @@ application.config['path'] = APP_ROOT
 
 # Note: We don't need to call run() since our applicationlication is embedded within
 # the application Engine WSGI applicationlication server.
-
+def get_edges(file_name):
+    import cv2
+    #img = cv2.imread(APP_ROOT + '/static/images/gate-6.jpg',0)
+    #img = cv2.imread(APP_ROOT +'/static/images/afrika.png',0)
+    #img = cv2.imread(APP_ROOT +'/static/images/Smiley.svg.png',0)
+    #img = cv2.imread(APP_ROOT +'/static/images/europe.png',0)
+    #img = cv2.imread(APP_ROOT +'/static/images/mikey.jpg',0)
+    img = cv2.imread(file_name, 0)
+    edges = cv2.Canny(img,0,200)
+    ret = []
+    for row in edges:
+        ret_row = []
+        for point in row:
+            ret_row.append(0 if point == 0 else 1)
+        ret.append(ret_row)
+    return ret
 
 @application.route('/')
 def home():
     """Return a friendly HTTP greeting."""
-    return render_template('home.html');
+    base = get_edges(APP_ROOT +'/static/images/afrika.png');
+    return render_template('home.html', base=base);
 
 
 @application.route('/test')
@@ -32,28 +48,11 @@ def test():
 
 
 @application.route('/image', methods=['GET', 'POST', 'PUT'])
-def get_edges():
+def get_image():
     """Post inage and return edges base foe maze"""
-    import sys
-    #sys.path.append('/usr/local/lib/python2.7/dist-packages/')
-    try:
-        import cv2
-    except Exception as e:
-        return 'Can not inmport cv2'
-    #img = cv2.imread(APP_ROOT + '/static/images/gate-6.jpg',0)
-    img = cv2.imread(APP_ROOT +'/static/images/afrika.png',0)
-    #img = cv2.imread(APP_ROOT +'/static/images/Smiley.svg.png',0)
-    #img = cv2.imread(APP_ROOT +'/static/images/europe.png',0)
-    #img = cv2.imread(APP_ROOT +'/static/images/mikey.jpg',0)
-    edges = cv2.Canny(img,0,200)
-    ret = []
-    for row in edges:
-        ret_row = []
-        for point in row:
-            ret_row.append(0 if point == 0 else 1)
-        ret.append(ret_row)
-    resp = Response()
-    #resp.headers['Content-Type'] = 'application/json'
+
+
+
     return json.dumps({'data' :ret})
 
 
