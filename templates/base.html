@@ -7,10 +7,22 @@
   <link rel="stylesheet" href="static/build.min.css" />
   <script src="static/build.min.js"></script>
 </head>
-  <body>
-  {% include 'topnav.html' %}
-    <div id="content">{% block content %}{% endblock %}</div>
-    <div id="footer">
-    </div>
-  </body>
+<body>
+{% include 'topnav.html' %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class=container-fluid>
+  {% for message in messages %}
+  <div class="alert alert-warning">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    %% message %%
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+{% endwith %}
+<div id="content">{% block content %}{% endblock %}</div>
+<div id="footer">
+</div>
+</body>
 </html>

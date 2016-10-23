@@ -1,7 +1,9 @@
-from flask import Flask, url_for, render_template
+from flask import Flask, request, url_for, render_template, flash, redirect
 from flask import Response
 import json
 import os
+from werkzeug.utils import secure_filename
+import pprint
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 class CustomFlask(Flask):
     jinja_options = Flask.jinja_options.copy()
@@ -13,6 +15,10 @@ class CustomFlask(Flask):
 application = CustomFlask(__name__)
 application.config['DEBUG'] = True
 application.config['path'] = APP_ROOT
+application.secret_key = "super secret key"
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+application.config['UPLOAD_FOLDER'] = 'var/tmp/'
+
 
 # Note: We don't need to call run() since our applicationlication is embedded within
 # the application Engine WSGI applicationlication server.
@@ -33,27 +39,46 @@ def get_edges(file_name):
         ret.append(ret_row)
     return ret
 
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 @application.route('/')
 def home():
     """Return a friendly HTTP greeting."""
     base = get_edges(APP_ROOT +'/static/images/afrika.png');
-    return render_template('home.html', base=base);
+    return render_template('home.html', base=base)
 
 
 @application.route('/test')
 def test():
     """Return a friendly HTTP greeting."""
-    return 'Test';
+    return 'Test'
 
 
 
 @application.route('/image', methods=['GET', 'POST', 'PUT'])
 def get_image():
     """Post inage and return edges base foe maze"""
+    if 'image' not in request.files:
+        flash('No file part')
+        return redirect('/')
+    file = request.files['image']
 
+    # if user does not select file, browser also
+    # submit a empty part without filename
+    if file.filename == '':
+        flash('No selected file')
+        return redirect('/')
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        path = APP_ROOT = os.path.join(
+            application.config['path'],
+            application.config['UPLOAD_FOLDER'],
+            filename)
+        file.save(path)
+        return render_template('home.html', base=get_edges(path))
 
-
-    return json.dumps({'data' :ret})
 
 
 @application.errorhandler(404)
