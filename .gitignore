@@ -10,3 +10,4 @@ lib/*
 *.zip
 ansible/app.zip
 *.pyc
+var/*
