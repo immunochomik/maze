@@ -1,5 +1,5 @@
 #!/bin/bash
-node build.js
+node build.js production
 BUILD=app.zip
 rm $BUILD
 zip -x app.zip              \

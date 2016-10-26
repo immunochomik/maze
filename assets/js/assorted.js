@@ -9,13 +9,17 @@ function pp(x, stop) {
   }
 }
 
-function createArr(x, y) {
+function createArr(x, y, fill, rand) {
+  fill = fill | 0;
   var arr = [];
   for(var i = 0; i < y; i++) {
     var row = [];
     for(var j = 0; j < x; j++) {
-      //row.push(Math.random() * 2 | 0);
-      row.push(0);
+      if (rand) {
+        row.push(Math.random() * 2 | 0);
+        continue;
+      }
+      row.push(fill);
     }
     arr.push(row);
   }

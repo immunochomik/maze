@@ -70,7 +70,10 @@ def get_image():
     if file.filename == '':
         flash('No selected file')
         return redirect('/')
-    if file and allowed_file(file.filename):
+    if not allowed_file(file.filename.lower()):
+        flash('file extension not allowed for file ' + file.filename)
+        return redirect('/')
+    if file:
         filename = secure_filename(file.filename)
         path = APP_ROOT = os.path.join(
             application.config['path'],

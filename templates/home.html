@@ -4,115 +4,139 @@
 {% block content %}
 <style>
   input.number {
-    max-width: 6em;
+    max-width: 5em;
     padding: 2px;
+  }
+  .tab-pane {
+    padding-top: 1em;
   }
 </style>
 <div class="container">
   <div id="main">
-    <hr>
-    <h4>Maze settings I am going to hide it </h4>
-    <form class="form-inline" v-on:submit.prevent>
-      <div class="form-group">
-        <label for="width">Width</label>
-        <input type="number" class="form-control number" id="width" v-model="width" >
+    <h3>Generate Maze Based on a Image</h3>
+    <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#settings">Maze Settings</a></li>
+      <li><a data-toggle="tab" href="#uploadFile">Upload Base File</a></li>
+    </ul>
+    <div class="tab-content">
+      <div id="settings" class="tab-pane fade in active">
+        <form class="form-inline" v-on:submit.prevent>
+          <div class="form-group">
+            <label for="width">Width</label>
+            <input type="number" class="form-control number" id="width" v-model="width" >
+          </div>
+          <div class="form-group">
+            <label for="width">Height</label>
+            <input type="number" class="form-control number" id="height" v-model="height" >
+          </div>
+          <div class="form-group">
+            <label for="cell">Cell</label>
+            <input type="number" class="form-control number" id="cell" v-model="cell" >
+          </div>
+          <div class="form-group">
+            <label for="wall">Wall</label>
+            <input type="number" class="form-control number" id="wall" v-model="wall" >
+          </div>
+          <input type="checkbox" id="usePictureCheckbox" v-model="usePicture">
+          <label for="usePictureCheckbox">Use Picture</label>
+          <div class="form-group">
+            <button class="btn btn-default" @click="renderMaze">Regenerate</button>
+          </div>
+        </form>
       </div>
-      <div class="form-group">
-        <label for="width">Height</label>
-        <input type="number" class="form-control number" id="height" v-model="height" >
+      <div id="uploadFile" class="tab-pane fade">
+        <form class="form-inline" method="post" action="image"
+              enctype="multipart/form-data">
+          <div class="form-group">
+            <input type="file" class="form-control" name="image" id="image">
+          </div>
+          <div class="form-group">
+            <button class="btn btn-default" >Upload</button>
+          </div>
+        </form>
       </div>
-      <div class="form-group">
-        <label for="cell">Cell</label>
-        <input type="number" class="form-control number" id="cell" v-model="cell" >
-      </div>
-      <div class="form-group">
-        <label for="wall">Wall</label>
-        <input type="number" class="form-control number" id="wall" v-model="wall" >
-      </div>
-      <div class="form-group">
-        <button class="btn btn-default" @click="renderMaze">Generate</button>
-      </div>
-    </form>
-    <hr>
     </div>
-  <div>
-    <h4>You can upload an image as base for the maze</h4>
-    <form class="form-inline" method="post" action="image"
-          enctype="multipart/form-data">
-      <div class="form-group">
-        <input type="file" class="form-control" name="image" id="image">
+    <div class="row">
+      <div class="col-xs-6" style="margin-top: 1em;">
+        <canvas id="canvas"
+                style="background-color: black;"
+                width=""
+                height=""></canvas>
       </div>
-      <div class="form-group">
-        <button class="btn btn-default" >Upload</button>
+      <div class="col-xs-6" style="margin-top: 1em;">
+        <canvas id="canvas2"
+                style="background-color: black;"
+                width=""
+                height=""></canvas>
       </div>
-    </form>
-    <hr>
-  </div>
-  <div class="row">
-    <div style="margin-top: 1em;">
-      <canvas id="canvas"
-              style="background-color: black;"
-              width=""
-              height=""></canvas>
     </div>
-
   </div>
-</div>
-<script>
-  var hmin = 768;
-  var WeAreInHorizontalForm = true;
-  function resizeNumbers() {
-    if(window.innerWidth < hmin && WeAreInHorizontalForm) {
-      $('.number').removeClass('number').addClass('iAmNotANumber');
-      WeAreInHorizontalForm = false;
-    }
-    if(window.innerWidth > hmin && !WeAreInHorizontalForm) {
-      $('.iAmNotANumber').removeClass('iAmNotANumber').addClass('number');
-      WeAreInHorizontalForm = true;
-    }
-  }
-  resizeNumbers();
-  $(window).on('resize', function(e) {
-    resizeNumbers();
-  });
-
-
-  new Vue({
-    el: '#main',
-    data: {
-      width : 200,
-      height: 200,
-      cell: 2,
-      wall: 2,
-      canvasId : 'canvas'
-    },
-    methods: {
-      makeMaze : function(arr) {
-        arr = arr || createArr(this.width, this.height);
-        var MB = new MazeBuilder(arr);
-        MB.RecBackTracker();
-        return MB.getMaze();
-      },
-      renderMaze : function() {
-        var used_base = getBase();
-        var arr = this.makeMaze(used_base);
-        var Rendi = new Renderer('canvas', arr, this.wall, this.cell);
-        Rendi.render(arr);
+  <script>
+    var hmin = 768;
+    var WeAreInHorizontalForm = true;
+    function resizeNumbers() {
+      if(window.innerWidth < hmin && WeAreInHorizontalForm) {
+        $('.number').removeClass('number').addClass('iAmNotANumber');
+        WeAreInHorizontalForm = false;
       }
-    },
-    ready: function () {
-      this.renderMaze()
+      if(window.innerWidth > hmin && !WeAreInHorizontalForm) {
+        $('.iAmNotANumber').removeClass('iAmNotANumber').addClass('number');
+        WeAreInHorizontalForm = true;
+      }
     }
-  });
+    resizeNumbers();
+    $(window).on('resize', function(e) {
+      resizeNumbers();
+    });
 
-  function getBase() {
-    var base = [];
-    {% if base %}
-      base = JSON.parse('%% base | tojson %%');
-      {% endif %}
-      return base;
-    }
+    new Vue({
+      el: '#main',
+      data: {
+        usePicture: false,
+        width : 7,
+        height: 7,
+        cell: 10,
+        wall: 2,
+        canvasId : 'canvas'
+      },
+      methods: {
+        makeMaze : function(arr) {
+          arr = arr || createArr(this.width, this.height);
+          var MB = new MazeBuilder(arr);
+          MB.RecDivision();
+          var m = MB.getMaze();
+          //console.log(m);
+          return m;
+        },
+        makeMaze2 : function(arr) {
+          arr = arr || createArr(this.width, this.height);
+          var MB = new MazeBuilder(arr);
+          MB.RecBackTracker();
+          var m = MB.getMaze();
+          return m;
+        },
+        renderMaze : function() {
+          var base = this.usePicture ? getBase() : createArr(this.width, this.height, 1);
+          var Rendi = new Renderer('canvas', this.makeMaze(base), this.wall, this.cell);
+          Rendi.render();
+          var base2 = this.usePicture ? getBase() : createArr(this.width, this.height);
+          var Rendi2 = new Renderer('canvas2', this.makeMaze2(base2), this.wall, this.cell);
+          Rendi2.render();
+        }
+      },
+      ready: function () {
+        this.renderMaze()
+      }
+    });
 
-</script>
+    function getBase() {
+      var base = [];
+      {% if base %}
+        base = JSON.parse('%% base | tojson %%');
+        {% endif %}
+        return base;
+      }
 
-{% endblock %}
+  </script>
+
+  {% endblock %}

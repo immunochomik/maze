@@ -7,6 +7,8 @@ var MazeBuilder = (function(){
     if(!Array.isArray(base)) {
       throw new Error('Base for maze has to be an array');
     }
+    // well default base character is different for cell carver and wall putter
+    this.filer = base[0][0];
     this.prepare(base);
     this.go = true;
   };
@@ -16,7 +18,8 @@ var MazeBuilder = (function(){
     // row has odd length
     if(base.length % 2 === 0) {
       // we need to append new row of zeros
-      base.push(Array.apply(null, new Array(base[0].length)).map(Number.prototype.valueOf,0));
+      base.push(Array.apply(null, new Array(base[0].length))
+        .map(Number.prototype.valueOf, this.filer));
     }
     this.rowLength = base[0].length;
     for(var i = 0; i < base.length; i++) {
@@ -25,7 +28,7 @@ var MazeBuilder = (function(){
       }
       // the rows need to be odd
       if(this.rowLength % 2 !== 1) {
-        base[i].push(0);
+        base[i].push(this.filer);
       }
     }
     // we need to update the row length if we have had push 0 to all the rows
@@ -34,10 +37,74 @@ var MazeBuilder = (function(){
     }
     this.m = base;
   };
+  /**
+   * In my maze representation, walls are 0 and passages are 1,
+   * @param p
+   * @constructor
+   */
+  var c = 0;
+  Def.prototype.RecDivision = function(x1,x2,y1,y2) {
+    x1 = x1 || 0;
+    x2 = x2 || this.rowLength;
+    y1 = y1 || 0;
+    y2 = y2 || this.m.length;
+    c += 1;
+    if(c > 3000) {
+      throw new Error('Infinite recursion detected');
+    }
+    // make random wall crossing available area
+    // get the proportion between dimension make biased decision regarding the v - h
+    // mark the line
+    switch (weightChoice(['H', 'V'], [0.5, 0.5])) {
+      case 'H' :
+        // chose random row number
+        var wall = randomOdd(y1+1, y2-1);
+        console.log(c, 'H', [x1,x2,y1,y2], wall);
+        if(wall === false) {
+          return;
+        }
+        // mark the wall
+        for(var i = x1; i < x2; i++ ) {
+          this.m[wall][i] = 0;
+        }
+        // mark random passage
+        this.m[wall][randomEven(x1+1, x2-1)] = 1;
+        // if there is space underneath you can go down
+        if(wall - y1 > 1) {
+          this.RecDivision(x1, x2, y1, wall);
+        }
+        // if there is space for at least one wall on top go on top
+        if(y2 - wall > 1) {
+          this.RecDivision(x1, x2, wall, y2);
+        }
+        break;
+      case 'V':
+        // chose random coll number
+        var wall = randomOdd(x1+1, x2-1);
+        console.log(c, 'V', [x1,x2,y1,y2], wall);
+        if(wall === false) {
+          // mark the wall
+          return;
+        }
+        for(var i = y1; i < y2; i++ ) {
+          this.m[i][wall] = 0;
+        }
+        // mark random passage
+        this.m[randomEven(y1+1, y2-1)][wall] = 1;
+        // can go right when there is space for at least one wall there
+        if(x2 - wall > 1) {
+          this.RecDivision(wall, x2, y1, y2);
+        }
+        // can go left if there is at least one space for wall there
+        if(wall - x1 > 1 ) {
+          this.RecDivision(x1, wall, y1, y2);
+        }
+    };
+  };
   Def.prototype.RecBackTracker = function() {
     var stack = [],
-        sanity = 0,
-        cell = this.randomCell();
+      sanity = 0,
+      cell = this.randomCell();
     stack.push(cell);
     this.markPosition(cell);
     do {
@@ -98,7 +165,6 @@ var MazeBuilder = (function(){
   Def.prototype.getMaze = function() {
     return this.m;
   };
-  // hide this ugly brackety bush
   Def.prototype.markPosition = function(cell, val) {
     if(this.legalPosition(cell)) {
       this.m[cell[1]][cell[0]] = val || 1;
@@ -131,7 +197,44 @@ var MazeBuilder = (function(){
       (Math.random() * 2 | 0) && this.legalPosition([0, oddRow + 1]) ? oddRow + 1 : oddRow -1
     ]
   };
+
+  function randomEven(min, max) {
+    var oneTry = randomIntFromInterval(min, max);
+    return oneTry % 2 === 0 || min === max ? oneTry : randomEven(min, max);
+  }
+
+  function randomIntFromInterval(min,max) {
+    return Math.floor(Math.random()*(max-min+1)+min);
+  }
+
+  function randomOdd(min,max) {
+    if(min === max && min % 2 === 0) {
+      return false;
+    }
+    var oneTry = randomIntFromInterval(min, max);
+    return oneTry % 2 !== 0 ? oneTry : randomOdd(min, max);
+  }
+
+  /**
+   * http://stackoverflow.com/questions/8877249/generate-random-integers-with-probabilities
+   * @param choices ['N', 'S', 'W', 'E']; // values to return
+   * @param weights [0.1, 0.2, 0.1, 0.6]; // probabilities
+   * @returns {*}
+   */
+  function weightChoice (choices, weights) {
+    var num = Math.random(),
+      s = 0,
+      lastIndex = weights.length - 1;
+
+    for (var i = 0; i < lastIndex; ++i) {
+      s += weights[i];
+      if (num < s) {
+        return choices[i];
+      }
+    }
+
+    return choices[lastIndex];
+  };
+
   return Def;
 })();
-
-
