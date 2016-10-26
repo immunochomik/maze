@@ -92,15 +92,15 @@
     new Vue({
       el: '#main',
       data: {
-        usePicture: false,
-        width : 7,
-        height: 7,
-        cell: 10,
-        wall: 2,
+        usePicture: true,
+        width : 50,
+        height: 50,
+        cell: 2,
+        wall: 1,
         canvasId : 'canvas'
       },
       methods: {
-        makeMaze : function(arr) {
+        makeMazeRD : function(arr) {
           arr = arr || createArr(this.width, this.height);
           var MB = new MazeBuilder(arr);
           MB.RecDivision();
@@ -108,19 +108,20 @@
           //console.log(m);
           return m;
         },
-        makeMaze2 : function(arr) {
+        makeMazeRB : function(arr) {
           arr = arr || createArr(this.width, this.height);
           var MB = new MazeBuilder(arr);
+          MB.flipAll();
           MB.RecBackTracker();
           var m = MB.getMaze();
           return m;
         },
         renderMaze : function() {
           var base = this.usePicture ? getBase() : createArr(this.width, this.height, 1);
-          var Rendi = new Renderer('canvas', this.makeMaze(base), this.wall, this.cell);
+          var Rendi = new Renderer('canvas', this.makeMazeRD(base), this.wall, this.cell);
           Rendi.render();
           var base2 = this.usePicture ? getBase() : createArr(this.width, this.height);
-          var Rendi2 = new Renderer('canvas2', this.makeMaze2(base2), this.wall, this.cell);
+          var Rendi2 = new Renderer('canvas2', this.makeMazeRB(base2), this.wall, this.cell);
           Rendi2.render();
         }
       },

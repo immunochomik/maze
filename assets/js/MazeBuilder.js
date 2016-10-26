@@ -37,29 +37,29 @@ var MazeBuilder = (function(){
     }
     this.m = base;
   };
+  Def.prototype.flipAll = function() {
+    for(var i = 0; i < this.m.length; i++ ) {
+      for(var j = 0; j < this.rowLength; j++ ) {
+        this.m[i][j] = this.m[i][j] === 0 ? 1 : 0;
+      }
+    }
+  };
   /**
    * In my maze representation, walls are 0 and passages are 1,
-   * @param p
-   * @constructor
    */
-  var c = 0;
   Def.prototype.RecDivision = function(x1,x2,y1,y2) {
     x1 = x1 || 0;
     x2 = x2 || this.rowLength;
     y1 = y1 || 0;
     y2 = y2 || this.m.length;
-    c += 1;
-    if(c > 3000) {
-      throw new Error('Infinite recursion detected');
-    }
     // make random wall crossing available area
     // get the proportion between dimension make biased decision regarding the v - h
     // mark the line
-    switch (weightChoice(['H', 'V'], [0.5, 0.5])) {
+    var wall = false;
+    switch (weightChoice(['H', 'V'], getWeightsForRD(x1-x2, y1-y2))) {
       case 'H' :
         // chose random row number
-        var wall = randomOdd(y1+1, y2-1);
-        console.log(c, 'H', [x1,x2,y1,y2], wall);
+        wall = randomOdd(y1+1, y2-1);
         if(wall === false) {
           return;
         }
@@ -80,10 +80,8 @@ var MazeBuilder = (function(){
         break;
       case 'V':
         // chose random coll number
-        var wall = randomOdd(x1+1, x2-1);
-        console.log(c, 'V', [x1,x2,y1,y2], wall);
+        wall = randomOdd(x1+1, x2-1);
         if(wall === false) {
-          // mark the wall
           return;
         }
         for(var i = y1; i < y2; i++ ) {
@@ -197,6 +195,12 @@ var MazeBuilder = (function(){
       (Math.random() * 2 | 0) && this.legalPosition([0, oddRow + 1]) ? oddRow + 1 : oddRow -1
     ]
   };
+  function getWeightsForRD(x,y) {
+    //x = Math.abs(x);
+    //y = Math.abs(y);
+    //return [x/(x + y), y/(x + y)];
+    return [0.5, 0.5];
+  }
 
   function randomEven(min, max) {
     var oneTry = randomIntFromInterval(min, max);

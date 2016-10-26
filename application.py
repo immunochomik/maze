@@ -4,6 +4,7 @@ import json
 import os
 from werkzeug.utils import secure_filename
 import pprint
+import imghdr
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 class CustomFlask(Flask):
     jinja_options = Flask.jinja_options.copy()
@@ -35,7 +36,7 @@ def get_edges(file_name):
     for row in edges:
         ret_row = []
         for point in row:
-            ret_row.append(0 if point == 0 else 1)
+            ret_row.append(1 if point == 0 else 0)
         ret.append(ret_row)
     return ret
 
@@ -64,7 +65,6 @@ def get_image():
         flash('No file part')
         return redirect('/')
     file = request.files['image']
-
     # if user does not select file, browser also
     # submit a empty part without filename
     if file.filename == '':
@@ -75,12 +75,19 @@ def get_image():
         return redirect('/')
     if file:
         filename = secure_filename(file.filename)
-        path = APP_ROOT = os.path.join(
+        path = os.path.join(
             application.config['path'],
             application.config['UPLOAD_FOLDER'],
             filename)
         file.save(path)
-        return render_template('home.html', base=get_edges(path))
+        # check it the file is an actual image
+        if not imghdr.what(path):
+            flash('File is not an image')
+            os.remove(path)
+            return redirect('/')
+        base = get_edges(path)
+        os.remove(path)
+        return render_template('home.html', base=base)
 
 
 
