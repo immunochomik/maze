@@ -5,6 +5,7 @@ import os
 from werkzeug.utils import secure_filename
 import pprint
 import imghdr
+import cv2
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 class CustomFlask(Flask):
     jinja_options = Flask.jinja_options.copy()
@@ -20,18 +21,15 @@ application.secret_key = "super secret key"
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 application.config['UPLOAD_FOLDER'] = 'var/tmp/'
 
+def resize(im, max_width):
+    w, h = im.shape[:2]
+    return cv2.resize(im, (max_width, (max_width * w)/h))
 
-# Note: We don't need to call run() since our applicationlication is embedded within
-# the application Engine WSGI applicationlication server.
-def get_edges(file_name):
-    import cv2
-    #img = cv2.imread(APP_ROOT + '/static/images/gate-6.jpg',0)
-    #img = cv2.imread(APP_ROOT +'/static/images/afrika.png',0)
-    #img = cv2.imread(APP_ROOT +'/static/images/Smiley.svg.png',0)
-    #img = cv2.imread(APP_ROOT +'/static/images/europe.png',0)
-    #img = cv2.imread(APP_ROOT +'/static/images/mikey.jpg',0)
-    img = cv2.imread(file_name, 0)
-    edges = cv2.Canny(img,0,200)
+def get_edges(file_name, max_width = 500):
+    """ takes path to an image, resizes it and performs canny edge
+    detection and formats to list of lists with 1 or 0 """
+    im = resize(cv2.imread(file_name, 0), max_width)
+    edges = cv2.Canny(im,0,200)
     ret = []
     for row in edges:
         ret_row = []
@@ -73,21 +71,20 @@ def get_image():
     if not allowed_file(file.filename.lower()):
         flash('file extension not allowed for file ' + file.filename)
         return redirect('/')
-    if file:
-        filename = secure_filename(file.filename)
-        path = os.path.join(
-            application.config['path'],
-            application.config['UPLOAD_FOLDER'],
-            filename)
-        file.save(path)
-        # check it the file is an actual image
-        if not imghdr.what(path):
-            flash('File is not an image')
-            os.remove(path)
-            return redirect('/')
-        base = get_edges(path)
+    filename = secure_filename(file.filename)
+    path = os.path.join(
+        application.config['path'],
+        application.config['UPLOAD_FOLDER'],
+        filename)
+    file.save(path)
+    # check it the file is an actual image
+    if not imghdr.what(path):
+        flash('File is not an image')
         os.remove(path)
-        return render_template('home.html', base=base)
+        return redirect('/')
+    base = get_edges(path)
+    os.remove(path)
+    return render_template('home.html', base=base)
 
 
 
