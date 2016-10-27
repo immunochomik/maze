@@ -45,7 +45,7 @@ def allowed_file(filename):
 @application.route('/')
 def home():
     """Return a friendly HTTP greeting."""
-    base = get_edges(APP_ROOT +'/static/images/afrika.png');
+    base = get_edges(APP_ROOT +'/static/images/index.jpeg');
     return render_template('home.html', base=base)
 
 

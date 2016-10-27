@@ -21,11 +21,11 @@
     <div class="tab-content">
       <div id="settings" class="tab-pane fade in active">
         <form class="form-inline" v-on:submit.prevent>
-          <div class="form-group">
+          <div v-if="!usePicture" class="form-group">
             <label for="width">Width</label>
             <input type="number" class="form-control number" id="width" v-model="width" >
           </div>
-          <div class="form-group">
+          <div v-if="!usePicture" class="form-group">
             <label for="width">Height</label>
             <input type="number" class="form-control number" id="height" v-model="height" >
           </div>
@@ -58,13 +58,21 @@
     </div>
     <div class="row">
       <div class="col-xs-6" style="margin-top: 1em;">
-        <canvas id="canvas"
+        <button class="btn btn-default" @click="showRD = !showRD">Recursive Divider Toggle</button>
+      </div>
+      <div class="col-xs-6" style="margin-top: 1em;">
+        <button class="btn btn-default" @clicl="showRB = !showRB">Recursive Back Tracker Toggle</button>
+      </div>
+    </div>
+    <div class="row">
+      <div  class="col-xs-6" style="margin-top: 1em;">
+        <canvas v-if="showRD"  id="canvas"
                 style="background-color: black;"
                 width=""
                 height=""></canvas>
       </div>
-      <div class="col-xs-6" style="margin-top: 1em;">
-        <canvas id="canvas2"
+      <div  class="col-xs-6" style="margin-top: 1em;">
+        <canvas v-if="showRB"  id="canvas2"
                 style="background-color: black;"
                 width=""
                 height=""></canvas>
@@ -93,28 +101,34 @@
       el: '#main',
       data: {
         usePicture: true,
-        width : 50,
-        height: 50,
+        showRD: true,
+        showRB: true,
+        width : 400,
+        height: 400,
         cell: 2,
         wall: 1,
         canvasId : 'canvas'
+      },
+      watch: {
+        usePicture: function() {
+          this.renderMaze()
+        }
       },
       methods: {
         makeMazeRD : function(arr) {
           arr = arr || createArr(this.width, this.height);
           var MB = new MazeBuilder(arr);
           MB.RecDivision();
-          var m = MB.getMaze();
-          //console.log(m);
-          return m;
+          return MB.getMaze();
         },
         makeMazeRB : function(arr) {
           arr = arr || createArr(this.width, this.height);
           var MB = new MazeBuilder(arr);
-          MB.flipAll();
+          if(this.usePicture) {
+            MB.flipAll();
+          }
           MB.RecBackTracker();
-          var m = MB.getMaze();
-          return m;
+          return MB.getMaze();
         },
         renderMaze : function() {
           var base = this.usePicture ? getBase() : createArr(this.width, this.height, 1);
