@@ -45,7 +45,18 @@ def allowed_file(filename):
 @application.route('/')
 def home():
     """Return home."""
-    base = get_edges(APP_ROOT +'/static/images/index.jpeg');
+    iamge = request.args.get('base', default='index.jpeg')
+    legal = {
+      'afrika.png' : 'afrika.png',
+      'dog.jpeg' : 'dog.jpeg',
+      'europe.png' : 'europe.png',
+      'mikey.jpg' : 'mikey.jpg',
+      'Smiley.svg.png' : 'Smiley.svg.png',
+    }
+    iamge = legal.get(iamge)
+    if not iamge:
+        iamge = 'index.jpeg'
+    base = get_edges(APP_ROOT +'/static/images/' + iamge);
     return render_template('home.html', base=base)
 
 @application.route('/about')
