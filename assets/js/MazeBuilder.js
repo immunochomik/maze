@@ -7,7 +7,7 @@ var MazeBuilder = (function(){
     if(!Array.isArray(base)) {
       throw new Error('Base for maze has to be an array');
     }
-    // well default base character is different for cell carver and wall putter
+    // default base character is different for cell carver and wall putter
     this.filer = base[0][0];
     this.prepare(base);
     this.go = true;
@@ -26,12 +26,11 @@ var MazeBuilder = (function(){
       if(!Array.isArray(base[i]) || base[i].length != this.rowLength) {
         throw new Error('Malformed base for maze')
       }
-      // the rows need to be odd
       if(this.rowLength % 2 !== 1) {
         base[i].push(this.filer);
       }
     }
-    // we need to update the row length if we have had push 0 to all the rows
+    // we need to update the row length if we have had push filler to all the rows
     if(this.rowLength % 2 !== 1) {
       this.rowLength += 1;
     }
@@ -199,6 +198,7 @@ var MazeBuilder = (function(){
     //x = Math.abs(x);
     //y = Math.abs(y);
     //return [x/(x + y), y/(x + y)];
+    // works best when 50/50
     return [0.5, 0.5];
   }
 

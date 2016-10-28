@@ -31,12 +31,12 @@ var Renderer = (function() {
     // start position on canvas
       px = this.wall, py = this.wall;
 
-    // there are cels representing cells and cells representing walls
-    // all cells has to be drwan , then in case off walls we draw only when connecting cells
+    // there are cells representing cells and cells representing walls
+    // all cells has to be drawn , then in case off walls we draw only when connecting cells
     // every odd row is about walls, every odd column is about walls
     for(var i = 0; i < arr.length; i++) {
       for(var j = 0; j < arr[i].length; j++) {
-        // if it is cell cell drwa cell
+        // if it is cell draw cell
         if(i % 2 == 0 && j % 2 == 0) {
           if(arr[i][j]) {
             this.ctx.fillRect(px, py, cell, cell);
@@ -58,7 +58,7 @@ var Renderer = (function() {
         }
       }
       px = wall;
-      // if this was row of cells then add wall to y e
+      // if this was row of cells then add wall to it
       py += !(i % 2) ? cell : wall;
     }
 
