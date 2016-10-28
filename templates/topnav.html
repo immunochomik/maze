@@ -11,9 +11,20 @@
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li id="topNavLiCurrent" class="active nav-li"><a href="/">Maze</a></li>
-        <li id="topNavLiCalendar" class="nav-li"><a href="/about">About</a></li>
+        <li id="topNavLiHome" class="nav-li"><a href="/">Maze</a></li>
+        <li id="topNavLiAbout" class="nav-li"><a href="/about">About</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container-fluid -->
+  <script>
+    window.onload = function() {
+      console.log();
+        if(window.location.pathname == '/about') {
+          $('#topNavLiAbout').addClass('active');
+        } else {
+          $('#topNavLiHome').addClass('active');
+        }
+    }
+   
+  </script>
 </nav>
