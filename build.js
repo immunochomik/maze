@@ -16,7 +16,6 @@ new compressor.minify({
     'node_modules/d3/build/d3.js',
     'node_modules/jquery/dist/jquery.js',
     'node_modules/vue/dist/vue.js',
-    'node_modules/vue-resource/dist/vue-resource.js',
     'node_modules/bootstrap/dist/js/bootstrap.js',
     'assets/js/assorted.js',
     'assets/js/MazeBuilder.js',

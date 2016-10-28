@@ -15,5 +15,5 @@ zip -x app.zip              \
     -x lib\*                \
     -r $BUILD .
 mv $BUILD ansible/$BUILD
-cd ansible/
-ansible-playbook deploy.yml
+export EC2_INI_PATH=/home/tomek/ansible/ec2.ini
+cd ansible/ && ansible-playbook setup-server.yml
