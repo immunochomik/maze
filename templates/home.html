@@ -4,7 +4,7 @@
 {% block content %}
 <style>
   input.number {
-    max-width: 5em;
+    width: 5em !important;
     padding: 2px;
   }
   .tab-pane {
@@ -13,29 +13,29 @@
 </style>
 <div class="container-fluid">
   <div id="main">
-    <h3>Generate Maze Based on a Image</h3>
+    <h3>Generate maze based on an image</h3>
     <ul class="nav nav-tabs">
-      <li class="active"><a data-toggle="tab" href="#settings">Maze Settings</a></li>
+      <li class="active"><a data-toggle="tab" href="#settings">Settings</a></li>
       <li><a data-toggle="tab" href="#uploadFile">Upload Base File</a></li>
     </ul>
     <div class="tab-content">
       <div id="settings" class="tab-pane fade in active">
         <form class="form-inline" v-on:submit.prevent>
-          <div v-if="!usePicture" class="form-group">
+          <div v-show="!usePicture" class="form-group">
             <label for="width">Width</label>
-            <input type="number" class="form-control number" id="width" v-model="width" >
+            <input type="number" class="form-control number" max="2000" min="4" id="width" v-model="width" />
           </div>
-          <div v-if="!usePicture" class="form-group">
+          <div v-show="!usePicture" class="form-group">
             <label for="width">Height</label>
-            <input type="number" class="form-control number" id="height" v-model="height" >
+            <input type="number" class="form-control number" max="2000" min="4" id="height" v-model="height" />
           </div>
           <div class="form-group">
             <label for="cell">Cell</label>
-            <input type="number" class="form-control number" id="cell" v-model="cell" >
+            <input type="number" class="form-control number" id="cell" v-model="cell" />
           </div>
           <div class="form-group">
             <label for="wall">Wall</label>
-            <input type="number" class="form-control number" id="wall" v-model="wall" >
+            <input type="number" class="form-control number" id="wall" v-model="wall" />
           </div>
           <input type="checkbox" id="usePictureCheckbox" v-model="usePicture">
           <label for="usePictureCheckbox">Use Picture</label>
@@ -57,22 +57,20 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-6" style="margin-top: 1em;">
+      <div  style="margin-top: 1em; margin-left: 1em;">
         <button class="btn btn-default" @click="showRD = !showRD">Recursive Divider Toggle</button>
-      </div>
-      <div class="col-xs-6" style="margin-top: 1em;">
-        <button class="btn btn-default" @clicl="showRB = !showRB">Recursive Back Tracker Toggle</button>
+        <button class="btn btn-default" @click="showRB = !showRB">Recursive Back Tracker Toggle</button>
       </div>
     </div>
     <div class="row">
-      <div  class="col-xs-6" style="margin-top: 1em;">
-        <canvas v-if="showRD"  id="canvas"
+      <div v-bind:class="{ 'col-xs-6': showRD }" style="margin-top: 1em;">
+        <canvas v-show="showRD"  id="canvas"
                 style="background-color: black;"
                 width=""
                 height=""></canvas>
       </div>
       <div  class="col-xs-6" style="margin-top: 1em;">
-        <canvas v-if="showRB"  id="canvas2"
+        <canvas v-show="showRB"  id="canvas2"
                 style="background-color: black;"
                 width=""
                 height=""></canvas>

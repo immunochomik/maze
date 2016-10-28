@@ -116,7 +116,7 @@ var MazeBuilder = (function(){
         continue;
       }
       cell = stack.pop();
-      if(sanity ++ > 1000000) {
+      if(sanity ++ > 100000000) {
         // just in case;
         throw new Error('Endless loop detected');
       }
