@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %} About {% endblock %}
+{% block content %}
+<div class="jumbotron text-center">
+  <h2>Few words about Maze Image</h2>
+
+</div>
+
+<div class="container" style="font-size: larger">
+
+  <p>
+    It seems to me that maze generation is a solved problem, therefore chances are small that I will be able to come up with anything original.  Well maybe that is not the point of the concurs. Maybe it is about making it interesting or funny, and to show some code skills.
+    If so then it seemed sensible to try any wired idea, for example I could investigate if a maze can be generated based on an image.
+  </p>
+  <br>
+  <p>
+    I have tried two algorithms, recursive backtracker and recursive divider, and in both cases <b>it is not working</b>.
+  </p>
+  <p style="margin-left: 2em"><b>Recursive backtracker</b> works better as the maze can be solved, but the image is not really visible and walls are broken.
+  </p>
+  <p  style="margin-left: 2em"><b>Recursive divider</b> does not work at all as the resulting maze can not be solved.
+  </p>
+  <br>
+  <p>
+    I have used very naive approach by just getting edges out of the picture and using the edges matrix as a base for the maze. Certainly that can be improved, for example if the maze generator is a cell carver then I should ensure that image edges are only walls.
+    Furthermore it seems that the the schema would work best if the maze is not based on true angels like in case of
+    <a href="http://www.astrolog.org/labyrnth/maze/crack.gif">crack maze</a><br>
+    I have not tried any of above for the lack of time.
+  </p>
+  <br>
+  <p  style="margin-left: 2em">
+    I hope you will have some fun with the Maze Image.
+  </p>
+  <br>
+  <p >
+    Code can be seen at <a href="https://github.com/immunochomik/maze">Github</a>
+  </p>
+
+</div>
+
+{% endblock %}

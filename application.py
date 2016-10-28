@@ -44,9 +44,14 @@ def allowed_file(filename):
 
 @application.route('/')
 def home():
-    """Return a friendly HTTP greeting."""
+    """Return home."""
     base = get_edges(APP_ROOT +'/static/images/index.jpeg');
     return render_template('home.html', base=base)
+
+@application.route('/about')
+def about():
+    """Return about"""
+    return render_template('about.html')
 
 
 @application.route('/test')
