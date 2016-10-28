@@ -1,5 +1,5 @@
 ---
-- hosts: tag_Name_Server
+- hosts: tag_Name_MImageServer
   sudo: True
   gather_facts: no
   vars:
